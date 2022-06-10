@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <el-form label-width="80px">
+        <el-form-item label="单选">
+            <el-radio-group v-model="radio" size="large">
+                <el-radio-button label="1" ></el-radio-button>
+                <el-radio-button label="2" ></el-radio-button>
+                <el-radio label="3">
+                    <el-tag class="el-icon-search"></el-tag>
+                </el-radio>
+            </el-radio-group>
+        </el-form-item>
+        <el-form-item label="多选框">
+            <el-checkbox-group v-model="checkbox" :fill="color">
+                <el-checkbox label="语文" ></el-checkbox>
+                <el-checkbox label="数学"></el-checkbox>
+                <el-checkbox label="英语"></el-checkbox>
+            </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="输入框">
+            <el-input type="text" prefix-icon="el-icon-bell" placeholder="input" v-model="input" clearable style="width: 50%">
+                <template slot="append">.com</template>
+            </el-input>
+        </el-form-item>
+        <el-form-item label="计数器">
+            <el-input-number v-model="num" :min="1" :max="10" :step="2"></el-input-number>
+        </el-form-item>
+        <el-form-item label="选择器">
+            <el-select v-model="selectvalue">
+                <el-option v-for="item in itemvalues" :value="item" :key="item"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="级联选择器">
+            <el-cascader v-model="cascadervalue" :options="options">
+            </el-cascader>
+        </el-form-item>
+        <el-form-item label="开关">
+            <el-switch v-model="switchvalue" active-icon-class="el-icon-search" active-color="#409eff" inactive-color="#c0ccda" inactive-icon-class="el-icon-edit">
+                开关
+            </el-switch>
+        </el-form-item>
+        <el-form-item label="上传文件">
+            <el-upload action="/uploadfile"  multiple :limit="limit">
+                <el-button>上传</el-button>
+            </el-upload>
+        </el-form-item>
+        <el-form-item label="按钮">
+            <el-button icon="el-icon-search" :loading="loading"></el-button>
+        </el-form-item>
+        <el-form-item label="搜索">
+            <el-input type="text" style="width:50%"></el-input>
+        </el-form-item>
+    </el-form>
+    <div id="app_sub" ref="app_sub">
+    </div>
+</div>
+
+</body>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/index.js"></script>
+<script src="../static/js/vue-router.min.js"></script>
+<script src="../static/js/axios.js"></script>
+<script src="../static/js/jquery-3.6.0.js"></script>
+<script src="../static/js/echarts.js"></script>
+<script>
+    Vue.prototype.$echarts = echarts
+    Vue.prototype.$chartInstance = null
+    app = new Vue(
+        {
+            el: '#app',
+            data: {
+                loading:false,
+                radio: '1',
+                checkbox:[],
+                color: '#fff000',
+                input:"",
+                limit:3,
+                num:1,
+                selectvalue:"",
+                itemvalues:['a','b','c'],
+                cascadervalue:"",
+                options:[
+                    {
+                        label:'文科',
+                        value:'a',
+                        children:[{
+                            label:'语文',
+                            value:'b'
+                        }]
+                    },{
+                        label:'理科',
+                        value:'c',
+                        children: [{
+                            label:'数学',
+                            value: 'd'
+                        }]
+                    }
+                ],
+                switchvalue:true
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+                this.$chartInstance = this.$echarts.init(this.$refs.app_sub)
+            },
+            methods: {
+                download_file: function (data) {
+                    if (!data) {
+                        return
+                    }
+                    console.log(data)
+                    let url = window.URL.createObjectURL(data.data)
+                    let link = document.createElement('a')
+                    link.style.display = 'none'
+                    link.href = url
+                    let filename = 'file.csv'
+                    if (data.headers['content-disposition'] !== '') {
+                        let contents = data.headers['content-disposition'].split('filename=')
+                        filename = contents[contents.length - 1]
+                    }
+                    link.setAttribute('download', filename)
+                    document.body.appendChild(link)
+                    link.click()
+                }
+            }
+        }
+    )
+
+</script>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <el-header height="60px" align="center">
+        <el-tag type="success" style="font-size: 24px">
+            数据生成系统
+        </el-tag>
+    </el-header>
+
+    <el-divider></el-divider>
+    <el-main>
+        <el-dialog title="提示" :visible.sync="dialogVisible" :before-close="handleClose">
+            <el-alert type="success" title="输入文件名">
+            </el-alert>
+            <el-form>
+                <el-form-item label="文件名">
+                    <el-input type="text" placeholder="example" v-model="filename"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer">
+                    <el-button type="success" @click="dialogSubmit">确定</el-button>
+                    <el-button type="warning" @click="dialogVisible = false">取消</el-button>
+                </span>
+        </el-dialog>
+        <el-row align="center">
+            <el-col>
+                <el-form label-width="80px" align="center">
+                    <el-form-item label="设置数目">
+                        数据个数:
+                        <el-input-number v-model="data_size"></el-input-number>
+                        科目数目:
+                        <el-input-number v-model="subject_size"></el-input-number>
+                    </el-form-item>
+                    <el-form-item :label="'科目'+item.id" v-for="item in items" :key="item.id">
+                        名称:
+                        <el-input style="width:20%" v-model="item.subject" type="text" placeholder="math"></el-input>
+                        范围：
+                        <el-input style="width:10%" v-model="item.min" type="text" placeholder="100"></el-input>
+                        -
+                        <el-input style="width:10%" v-model="item.max" type="text" placeholder="0"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            <el-col :offset='10'>
+                <el-button type="success" @click="submit_data">提交</el-button>
+                <el-button type="warning" @click="reset_data">重置</el-button>
+            </el-col>
+            <el-col></el-col>
+            <el-col :span='18' :offset='3'>
+                <el-table :data="tabledata" height="360">
+                    <el-table-column v-for="colum in columnnames" :prop="colum" :label="colum" :key="colum.id"
+                                     style="height: min-content">
+                    </el-table-column>
+                </el-table>
+            </el-col>
+            <el-col :offset='10'>
+                <el-button type="success" @click="save_data">保存</el-button>
+                <el-button type="success" @click="download_data">下载</el-button>
+                {#            <a :href="'/download'+download_data_url">下载文件</a>#}
+            </el-col>
+        </el-row>
+        <el-divider></el-divider>
+        <el-radio-group v-model="figure_type">
+            <el-radio-button label="line">折线图</el-radio-button>
+            <el-radio-button label="bar">柱状图</el-radio-button>
+            <el-radio-button label="pie">饼图</el-radio-button>
+            <el-radio-button label="scatter">散点图</el-radio-button>
+            <el-radio-button label="effectScatter">涟漪气泡图</el-radio-button>
+            <el-radio-button label="radar">雷达图</el-radio-button>
+            {#        <el-radio-button label="sunburst">旭日图</el-radio-button>#}
+            {#        <el-radio-button label="lines">线图</el-radio-button>#}
+        </el-radio-group>
+        <div id="app1" ref="app1" style="width: 100% ;height: 360px">
+
+        </div>
+    </el-main>
+
+    <el-divider></el-divider>
+    <el-footer align="center">
+        <el-pagination layout="sizes,prev,pager,next,jumper" :total="total_pages"></el-pagination>
+    </el-footer>
+</div>
+
+</body>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/index.js"></script>
+<script src="../static/js/vue-router.min.js"></script>
+<script src="../static/js/axios.js"></script>
+<script src="../static/js/jquery-3.6.0.js"></script>
+<script src="../static/js/echarts.js"></script>
+<script src="../static/js/random-data.js"></script>
+<script>
+    Vue.prototype.$echarts = echarts
+    Vue.prototype.$chartInstance = null
+    app = new Vue(
+        {
+            el: '#app',
+            data: {
+                data_size: 10,
+                tabledata: [],
+                columnnames: [],
+                text: "",
+                orgindata: {},
+                download_data_url: '',
+                figure_type: "line",
+                total_pages: 100,
+                items: [],
+                subject_size: 0,
+                dialogVisible: false,
+                filename: ""
+
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+                this.$chartInstance = this.$echarts.init(this.$refs.app1)
+            },
+            methods: {
+                submit_data(e) {
+                    var vm = this
+                    input_info = {
+                        subjects: vm.items,
+                        nums: vm.data_size
+                    }
+                    axios.post('/randomdatas', input_info)
+                        .then(function (rsp) {
+                            vm.tabledata.length = 0
+                            vm.columnnames.length = 0
+                            // 获取后端数据进行转换成对象
+                            vm.orgindata = eval('(' + rsp.data['data'] + ')')
+                            // 从原始数据获取单行数据
+                            transform_datas = transform_data(vm.orgindata)
+                            vm.columnnames = transform_datas[0]
+                            vm.tabledata = transform_datas[1]
+                            // 生成 option数据
+                            option = gen_option('example', vm.orgindata['姓名'], null)
+                            // 过滤数据
+                            map_data = filter_data(vm.orgindata, ['ID', '姓名', '性别'])
+                            //输入数据到echart中
+                            option = fill_echart_data(option, map_data, vm.figure_type)
+                            vm.$chartInstance.setOption(option)
+                        })
+                        .catch(function (err) {
+                            vm.$message({
+                                message: err,
+                                type: 'error'
+                            })
+                        })
+                },
+                reset_data: function (e) {
+                    var vm = this
+                    vm.subject_size = 0
+                    vm.filename = ""
+                    vm.items = []
+                    vm.tabledata= []
+                    vm.columnnames = []
+                    vm.$chartInstance.clear()
+                },
+                save_data: function (e) {
+                    this.dialogVisible = true;
+                },
+                download_data: function (e) {
+                    var vm = this
+                    if (vm.download_data_url === '') {
+                        vm.$message({
+                            type: 'warning',
+                            message: '没有保存生成数据！'
+                        })
+                        return
+                    }
+                    axios.request({
+                        method: 'get',
+                        url: '/download' + vm.download_data_url,
+                        responseType: 'blob'
+                    })
+                        .then(function (rsp) {
+                            vm.$message({
+                                type: 'success',
+                                message: '成功下载'
+                            })
+                            download_file(rsp)
+                        })
+                        .catch(function (err) {
+                            vm.$message({
+                                type: 'danger',
+                                message: '下载失败:' + err
+                            })
+                        })
+                },
+                handleClose: function (e) {
+                    this.dialogVisible = false;
+                    this.$message({
+                        type: 'warning',
+                        message: '文件名不能为空！'
+                    })
+                },
+                dialogSubmit: function (e) {
+                    this.dialogVisible = false;
+                    if (this.filename === '') {
+                        this.$message({
+                            type: 'error',
+                            message: '请填写要保存数据的文件名'
+                        })
+                    } else {
+                        var vm = this
+                        var filename = vm.filename;
+                        if (!filename.endsWith('.csv')) {
+                            filename = filename.replace('.csv', '')
+                        }
+                        axios.post('/savefile/' + filename, vm.orgindata)
+                            .then(function (rsp) {
+                                if (rsp.data.code === 0) {
+                                    vm.$message({
+                                        type: 'success',
+                                        message: rsp.data.msg
+                                    })
+                                    vm.download_data_url = rsp.data.data
+                                } else {
+                                    vm.$message({
+                                        type: 'warning',
+                                        message: rsp.data.msg
+                                    })
+                                }
+                            })
+                            .catch(function (err) {
+                                vm.$message({
+                                    type: 'error',
+                                    message: err
+                                })
+                            })
+                    }
+                }
+            },
+            watch: {
+                figure_type: function (val) {
+                    var vm = this
+                    transform_datas = transform_data(vm.orgindata)
+                    vm.columnnames = transform_datas[0]
+                    vm.tabledata = transform_datas[1]
+                    // 生成 option数据
+                    option = gen_option('example', vm.orgindata['姓名'], null)
+                    // 过滤数据
+                    map_data = filter_data(vm.orgindata, ['ID', '姓名', '性别'])
+                    //输入数据到echart中
+                    option = fill_echart_data(option, map_data, val)
+                    try {
+                        setTimeout(vm.$chartInstance.setOption(option), 500)
+
+                    } catch (e) {
+                        vm.$message({
+                            type: "error",
+                            message: e
+                        })
+                        vm.$chartInstance.clear()
+                    }
+
+                },
+                subject_size: function (val) {
+                    console.log(val)
+                    let i = 0;
+                    this.items = []
+                    for (i = 0; i < val; i++) {
+                        this.items.push({
+                            id: i,
+                            subject: 'math',
+                            max: 100,
+                            min: 0,
+                            type: 0
+                        })
+                    }
+                }
+            }
+        }
+    )
+
+</script>
+</html>

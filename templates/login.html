@@ -1,0 +1,216 @@
+<!-- 这个测试页主要是针对 vue.js element.js -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="../static/css/theme-chalk/index.css"/>
+    <script src="../static/js/vue.js"></script>
+    <script src="../static/js/vue-router.min.js"></script>
+    <!-- import Element-ui JavaScript -->
+    <script src="../static/js/index.js"></script>
+    <script src="../static/js/axios.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <div v-html="dialogMessage"></div>
+            数据生成系统
+        </el-header>
+        <el-main>
+            <el-form :ref="form" :model="form" label-width='80px' v-show='isDisabled'>
+                <el-row>
+                    <el-col :span='12' :offset='6'>
+                        <el-form-item label="用户名">
+                            <el-input v-model="form.username"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span='12' :offset='6'>
+                        <el-form-item label="密码">
+                            <el-input v-model="form.passwd" type='password'></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span='12' :offset='6'>
+                        <el-button type="success" @click="login($event,66)">
+                            登录
+                        </el-button>
+                        <el-button type="warning" @click="register($event)">
+                            注册
+                        </el-button>
+                        <!-- <router-link to="/foo">
+                            hehe
+                        </router-link > -->
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <!-- <router-view ></router-view> -->
+                </el-row>
+                <a href="gendata.html">gendata</a>
+            </el-form>
+            <el-dialog title="提示" :visible.sync="dialogVisible" :before-close="handleClose">
+                <el-alert type="success" title="填充">
+                    <p>{{ dialogMessage }}</p>
+                </el-alert>
+                <el-form>
+                    <el-form-item label="用户名">
+                        <el-input type="text" placeholder="hang" v-model="form.username"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码">
+                        <el-input type="password" v-model="form.passwd"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer">
+                    <el-button type="success" @click="dialogVisible = false">确定</el-button>
+                    <el-button type="warning" @click="dialogVisible = false">取消</el-button>
+                </span>
+            </el-dialog>
+        </el-main>
+    </el-container>
+</div>
+</body>
+
+
+<script>
+    // 1. 定义（路由）组件。
+    // 可以从其他文件 import 进来
+    const Foo = {
+        template: '<div>foo</div>'
+    }
+    const Bar = {
+        template: '<div>bar</div>'
+    }
+
+    // 2. 定义路由
+    // 每个路由应该映射一个组件。 其中"component" 可以是
+    // 通过 Vue.extend() 创建的组件构造器，
+    // 或者，只是一个组件配置对象。
+    // 我们晚点再讨论嵌套路由。
+    const routes = [{
+        path: '/foo',
+        component: Foo
+    },
+        {
+            path: '/bar',
+            component: Bar
+        }
+    ]
+
+    // 3. 创建 router 实例，然后传 `routes` 配置
+    // 你还可以传别的配置参数, 不过先这么简单着吧。
+    const router = new VueRouter({
+        routes // （缩写）相当于 routes: routes
+    })
+    app = new Vue({
+        router: router,
+        el: '#app',
+        data: {
+            newloadflag: true,
+            form: {
+                username: 'hang',
+                passwd: '123'
+            },
+            loadflag: '',
+            show: true,
+            isDisabled: true,
+            url: 'http://www.baidu.com',
+            dialogVisible: false,
+            dialogMessage: "hello! this is a first dialog!"
+        },
+        methods: {
+            login(event, num) {
+                var vm = this;
+                axios.post('/login', vm.form)
+                    .then(function (resp) {
+                        console.log(resp.request.responseURL)
+                        window.location = resp.request.responseURL
+                        {#window.location.replace('/gendata.html')#}
+                    })
+                    .catch(
+                        function (err) {
+                            vm.$message({
+                                message: 'get url happen error!',
+                                type: 'error'
+                            })
+                        }
+                    )
+                // this.$router.push('/bar');
+                // this.isDisabled = false;
+                // window.open('index.html');
+            },
+            register(event) {
+                this.$message({
+                    message: "用户退出",
+                    type: "warning"
+                })
+            },
+            test(event) {
+                console.log('test')
+                this.$message({
+                    message: this.loadflag,
+                    type: "success"
+                })
+            },
+            handleClose() {
+                var vm = this
+                this.$confirm('确认关闭吗？')
+                    .then(function (data) {
+                        vm.dialogVisible = false
+                    })
+                    .catch(function (e) {
+                        vm.$message({
+                            type: 'warning',
+                            message: e
+                        })
+                    })
+            }
+        }
+    })
+</script>
+<style>
+    .el-header {
+        background-color: #B3C0D1;
+        color: #333;
+        text-align: center;
+        line-height: 80px;
+    }
+
+    .el-footer {
+        background-color: #B3C0D1;
+        color: #333;
+        text-align: center;
+        line-height: 80px;
+    }
+
+    .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 200px;
+    }
+
+    .el-main {
+        background-color: #E9EEF3;
+        color: #333;
+        /* text-align: center; */
+        /* line-height: 400px; */
+    }
+
+    body > .el-container {
+        margin-bottom: 40px;
+    }
+
+    .el-container:nth-child(5) .el-aside,
+    .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+    }
+
+    .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+    }
+</style>
+</html>
