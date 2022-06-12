@@ -142,6 +142,7 @@ class User_Test(Model):
 if __name__ == '__main__':
     # print(dir(Field))
     user_test = User_Test()
+    user_test.create()
     # user_test.id = 1
     # user_test.name = 'hang'
     # user_test.age = 18
