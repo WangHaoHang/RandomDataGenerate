@@ -1,4 +1,9 @@
 import sqlite3
+import logging
+
+'''
+基于sqlite3的ORM模型架构
+'''
 
 
 class Field(object):
@@ -61,22 +66,34 @@ class Model(object, metaclass=ModelMetaClass):
         self.__dict__[key] = value
 
     def create(self):
+        '''
+        创建表
+        :return:
+        '''
         condition = []
         for k, v in self.__mappings__.items():
             condition.append(str(v.name) + ' ' + str(v.column_type))
         sql = 'create table %s(%s)' % (self.__table__, ','.join(condition))
-        print(sql)
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        self.conn.commit()
-        cur.close()
+        logging.warning(sql)
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except Exception as e:
+            logging.error("create table happens error,the statement of sql :%s,error:%s", sql, e)
 
     def save(self, **kwargs):
+        '''
+        保存数据
+        :param kwargs: 条件语句
+        :return:
+        '''
         update_str = []
         condition_str = []
 
         for k, v in self.__mappings__.items():
-            if kwargs.keys().index(k) >= 0:
+            if list(kwargs.keys()).count(k) >= 0:
                 v_condition = kwargs.get(k)
                 if type(v_condition) == int or type(v_condition) == float:
                     condition_str.append(str(v.name) + '=' + str(v_condition))
@@ -90,28 +107,44 @@ class Model(object, metaclass=ModelMetaClass):
             elif type(v) == str:
                 update_str.append(str(v.name) + '=' + '\'' + str(v_new) + '\'')
 
-        sql = 'update table %s set %s where %s' % (self.__table__, 'and'.join(update_str), 'and'.join(condition_str))
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        self.conn.commit()
-        cur.close()
+        sql = 'update %s set %s where %s' % (self.__table__, ' , '.join(update_str), ' and '.join(condition_str))
+        logging.warning(sql)
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except Exception as e:
+            logging.error("save infomation happens error,the statement of sql :%s,error:%s", sql, e)
 
     def insert(self):
+        '''
+        插入数据
+        :return:
+        '''
         fields = []
         args = []
         for k, v in self.__mappings__.items():
             fields.append(v.name)
             if v.column_type == 'text':
-                args.append('\''+getattr(self, k, None)+'\'')
+                args.append('\'' + getattr(self, k, None) + '\'')
             else:
                 args.append(str(getattr(self, k, None)))
         sql = 'insert into %s(%s) values(%s)' % (self.__table__, ','.join(fields), ','.join(args))
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        self.conn.commit()
-        cur.close()
+        logging.warning(sql)
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except Exception as e:
+            logging.error("insert data happens error,the statement of sql :%s,error:%s", sql, e)
 
     def delete(self):
+        '''
+        删除数据
+        :return:
+        '''
         update_str = []
 
         for k, v in self.__mappings__.items():
@@ -123,11 +156,16 @@ class Model(object, metaclass=ModelMetaClass):
             elif type(v) == str:
                 update_str.append(str(v.name) + '=' + '\'' + str(v_new) + '\'')
 
-        sql = 'delete table %s where %s' % (self.__table__, 'and'.join(update_str))
-        cur = self.conn.cursor()
-        cur.execute(sql)
-        self.conn.commit()
-        cur.close()
+        sql = 'delete from %s where %s' % (self.__table__, ' and '.join(update_str))
+
+        logging.warning(sql)
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql)
+            self.conn.commit()
+            cur.close()
+        except Exception as e:
+            logging.error("delete data happens error,the statement of sql :%s,error:%s", sql, e)
 
 
 class User_Test(Model):
@@ -142,8 +180,21 @@ class User_Test(Model):
 if __name__ == '__main__':
     # print(dir(Field))
     user_test = User_Test()
-    user_test.create()
-    # user_test.id = 1
-    # user_test.name = 'hang'
+    # 建表语句测试
+    # user_test.create()
+    # 插入语句测试
+    # user_test.id = 2
+    # user_test.name = 'hang1'
     # user_test.age = 18
     # user_test.insert()
+    # 保存语句测试
+    # user_test.id = 1
+    # user_test.name = 'hang1'
+    # user_test.age = 19
+    # user_test.save(name='hang')
+
+    #删除语句
+    user_test.id = 1
+    user_test.name = 'hang'
+    user_test.age = 19
+    user_test.delete()
