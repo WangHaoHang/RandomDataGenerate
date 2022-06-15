@@ -3,8 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+     <link rel="stylesheet" href="../static/css/theme-chalk/index.css">
 </head>
 <body>
+<div id="app">
+    <el-button type="warning"> hello </el-button>
+    <div id="echart" ref="echart">
+
+    </div>
+</div>
 
 </body>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/index.js"></script>
+<script src="../static/js/vue-router.min.js"></script>
+<script src="../static/js/axios.js"></script>
+<script src="../static/js/jquery-3.6.0.js"></script>
+<script src="../static/js/echarts.js"></script>
+<script type="application/javascript">
+    Vue.prototype.$echarts = echarts
+    Vue.prototype.$chartInstance = null
+    app = new Vue(
+        {
+            el: '#app',
+            mounted: function () {
+                this.$chartInstance = this.$echarts.init(this.$refs.echart)
+            },
+            data: {},
+            methods: {}
+        }
+    )
+
+</script>
 </html>
