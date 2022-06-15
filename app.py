@@ -20,6 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
 
+
 def get_username_passwd():
     name = request.cookies.get('User')
     passwd = request.cookies.get('Passwd')
@@ -39,8 +40,7 @@ def get_username_passwd():
 #             return redirect('/login')
 
 
-    # test
-
+# test
 
 
 # test
@@ -72,9 +72,9 @@ def login():
     name = request.json.get('username')
     passwd = request.json.get('passwd')
     rsp = resultMsg()
-    print(name,passwd)
+    print(name, passwd)
     from model.data_struct.user import User
-    u = User.query.filter_by(name=name,password=passwd).first()
+    u = User.query.filter_by(name=name, password=passwd).first()
     if u is None:
         rsp.code = '-1'
         rsp.msg = '校验失败'
@@ -115,11 +115,11 @@ def savefile(name):
     data = request.json
     if not os.path.exists('model/datas/tmp/1/'):
         os.mkdir('model/datas/tmp/1/')
-    flag = save_csv('model/datas/tmp/1/'+name+'.csv', data)
+    flag = save_csv('model/datas/tmp/1/' + name + '.csv', data)
     rsp = resultMsg()
     if flag:
         rsp.code = 0
-        rsp.data = '/1/'+name+'.csv'
+        rsp.data = '/1/' + name + '.csv'
     else:
         rsp.code = -1
         rsp.msg = '失败'
@@ -146,24 +146,6 @@ def uploadfile():
 @app.route(rule='/database', methods=['GET'])
 def database():
     db.create_all()
-    rsp = resultMsg()
-    return make_response(jsonify(rsp.__dict__))
-
-
-# test
-@app.route(rule='/insert', methods=['GET'])
-def insert():
-    result = insert_user()
-    print(result)
-    for i in range(100):
-        try:
-            from model.data_struct.user import User
-            admin = User(id=str(result['id'][i]), name=str(result['name'][i]), password=str(result['password'][i]),
-                         phone_number=str(int(result['phone_number'][i])), email=str(result['email'][i]))
-            db.session.add(admin)
-        except Exception as e:
-            print(e)
-    db.session.commit()
     rsp = resultMsg()
     return make_response(jsonify(rsp.__dict__))
 
