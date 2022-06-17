@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def save_csv(path: str, data: {}):
     '''
     保存数据到CSV文件中
@@ -16,7 +17,8 @@ def save_csv(path: str, data: {}):
         print(e)
     return flag
 
-def save_excel(path: str,data:{}):
+
+def save_excel(path: str, data: {}):
     '''
     保存数据到Excel文件中
     :param path: 保存路径

@@ -1,11 +1,20 @@
 class resultMsg(object):
+    '''
 
+    '''
     def __init__(self):
+        '''
+
+        '''
         self.code = '0'
         self.msg = 'success'
         self.data = None
 
     def error(self):
+        '''
+
+        :return:
+        '''
         self.code = '-1'
         self.msg = 'failed'
         return self

@@ -22,6 +22,10 @@ db = SQLAlchemy(app)
 
 
 def get_username_passwd():
+    '''
+
+    :return:
+    '''
     name = request.cookies.get('User')
     passwd = request.cookies.get('Passwd')
 
@@ -46,6 +50,10 @@ def get_username_passwd():
 # test
 @app.route(rule='/randomdatas', methods=['POST'])
 def random_datas():
+    '''
+
+    :return:
+    '''
     result = resultMsg()
     req_data = request.json.get('subjects')
     req_num = request.json.get('nums')
@@ -63,12 +71,20 @@ def random_datas():
 
 @app.route(rule='/', methods=['GET', 'POST'])
 def index():
+    '''
+
+    :return:
+    '''
     resp = make_response(render_template('login.html'))
     return resp
 
 
 @app.route(rule='/login', methods=['POST'])
 def login():
+    '''
+
+    :return:
+    '''
     name = request.json.get('username')
     passwd = request.json.get('passwd')
     rsp = resultMsg()
@@ -85,6 +101,10 @@ def login():
 
 @app.route(rule='/register', methods=['GET', 'POST'])
 def register():
+    '''
+
+    :return:
+    '''
     name = request.json.get('username')
     passwd = request.json.get('passwd')
     print(name, passwd)
@@ -101,17 +121,32 @@ def register():
 
 @app.route(rule='/gendata.html', methods=['GET'])
 def gendata():
+    '''
+
+    :return:
+    '''
     rsp = make_response(render_template('gendata.html'))
     return rsp
 
 
 @app.route(rule='/download/<id>/<file_name>', methods=['GET', 'POST'])
 def download(id, file_name):
+    '''
+
+    :param id:
+    :param file_name:
+    :return:
+    '''
     return send_file(path_or_file='model/datas/tmp/' + id + '/' + file_name, mimetype='application/text')
 
 
 @app.route(rule='/savefile/<name>', methods=['GET', 'POST'])
 def savefile(name):
+    '''
+
+    :param name:
+    :return:
+    '''
     data = request.json
     if not os.path.exists('model/datas/tmp/1/'):
         os.mkdir('model/datas/tmp/1/')
@@ -128,11 +163,19 @@ def savefile(name):
 
 @app.route(rule='/text')
 def text():
+    '''
+
+    :return:
+    '''
     return make_response(render_template('text.html'))
 
 
 @app.route(rule='/uploadfile', methods=['GET', 'POST'])
 def uploadfile():
+    '''
+
+    :return:
+    '''
     files = request.files.keys()
     print(files)
     for file in files:
@@ -145,6 +188,10 @@ def uploadfile():
 # test
 @app.route(rule='/database', methods=['GET'])
 def database():
+    '''
+
+    :return:
+    '''
     db.create_all()
     rsp = resultMsg()
     return make_response(jsonify(rsp.__dict__))
@@ -152,6 +199,10 @@ def database():
 
 @app.route(rule='/getUser', methods=['GET'])
 def getUser():
+    '''
+
+    :return:
+    '''
     rsp = resultMsg()
     rsp.data = []
     from model.data_struct.user import User
