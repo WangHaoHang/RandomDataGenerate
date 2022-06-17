@@ -12,6 +12,7 @@ host_port = 5903
 
 zk = KazooClient(hosts=host_url)
 
+
 def singleton(clsObject):
     '''
     单例模式--装饰器方法
@@ -76,7 +77,13 @@ class RedisUtil:
         :param value:
         :return:
         '''
-        pass
+        flag = True
+        try:
+            flag = self.redis.set(key, value.encode('utf-8'))
+        except Exception as e:
+            flag = False
+            logging.error("redisUtil ---- set_byte happens error! key:{%s},value:{%s},error:{%s}", key, value, e)
+        return flag
 
     def get_byte(self, key):
         '''
@@ -84,68 +91,189 @@ class RedisUtil:
         :param key:
         :return:
         '''
-        pass
+        result = ''
+        try:
+            result = self.redis.get(key)
+        except Exception as e:
+            logging.error("redisUtil ---- get_str happens error! key:{%s},error:{%s}", key, e)
+        return result
 
     # 列表
     def lpush(self, key, value):
+        '''
+        列表 入栈
+        :param key:
+        :param value:
+        :return:
+        '''
         pass
 
     def rpop(self, key):
+        '''
+        列表 出栈
+        :param key:
+        :return:
+        '''
         pass
 
     def brpop(self, key):
+        '''
+        列表 阻塞出栈
+        :param key:
+        :return:
+        '''
         pass
 
     def lindex(self, key, index):
+        '''
+        列表 查找
+        :param key:
+        :param index:
+        :return:
+        '''
         pass
 
     def lrange(self, key, start, end):
+        '''
+        列表 范围遍历
+        :param key:
+        :param start:
+        :param end:
+        :return:
+        '''
         pass
 
     def lsize(self, key):
+        '''
+        列表 长度
+        :param key:
+        :return:
+        '''
         pass
 
     # 集合
     def sadd(self, key, *value):
+        '''
+        集合 增加
+        :param key:
+        :param value:
+        :return:
+        '''
         pass
 
     def srem(self, key, *value):
+        '''
+        集合 删除
+        :param key:
+        :param value:
+        :return:
+        '''
         pass
 
     def sismem(self, key, value):
+        '''
+        集合 成员是否存在
+        :param key:
+        :param value:
+        :return:
+        '''
         pass
 
     def slen(self, key):
+        '''
+        集合 长度
+        :param key:
+        :return:
+        '''
         pass
 
     def smembers(self, key):
+        '''
+        集合 查找
+        :param key:
+        :return:
+        '''
         pass
 
     # 散列
     def hmset(self, key_name, **kwargs):
+        '''
+        散列表 增加
+        :param key_name:
+        :param kwargs:
+        :return:
+        '''
         pass
 
     def hmget(self, key_name, *key):
+        '''
+        散列表 查找
+        :param key_name:
+        :param key:
+        :return:
+        '''
         pass
 
     def hdel(self, key_name, *key):
+        '''
+        散列表 删除
+        :param key_name:
+        :param key:
+        :return:
+        '''
         pass
 
     def hlen(self, key_name):
+        '''
+        散列表 集合大小
+        :param key_name:
+        :return:
+        '''
         pass
 
     # 有序集合
 
     def zadd(self, key_name, **kwargs):
+        '''
+        有序集合 增加
+        :param key_name:
+        :param kwargs:
+        :return:
+        '''
+        pass
+
+    def zmem(self, key_name):
+        '''
+        有序集合 查找
+        :param key_name:
+        :return:
+        '''
         pass
 
     def zrem(self, key_name, *member):
+        '''
+        有序集合 删除
+        :param key_name:
+        :param member:
+        :return:
+        '''
         pass
 
     def zlen(self, key_name):
+        '''
+        有序集合 集合长度
+        :param key_name:
+        :return:
+        '''
         pass
 
     def zmdf(self, key_name, **kwargs):
+        '''
+        有序集合 修改
+        :param key_name:
+        :param kwargs:
+        :return:
+        '''
         pass
 
 
@@ -156,9 +284,9 @@ if __name__ == '__main__':
     print(id(singleton))
     obj.set_str('hang', 'wang')
     print(obj.get_str('hang'))
-    obj = RedisUtil()
-    print(id(obj))
-
+    obj1 = RedisUtil()
+    print(id(obj1))
+    print(obj1.get_byte('hang'))
 
     # print(id(getattr(RedisUtil,'set_str')))
 
