@@ -7,36 +7,128 @@ import logging
 
 
 class Field(object):
-    def __init__(self, name, column_type):
+    '''
+
+    '''
+
+    def __init__(self, name, column_type, primary_key=False, unique_key=False, is_null=True):
+        '''
+
+        :param name:
+        :param column_type:
+        :param primary_key:
+        :param unique_key:
+        :param is_null:
+        '''
         self.name = name
         self.column_type = column_type
+        self.primary_key = primary_key
+        self.unique_key = unique_key
+        self.is_null = is_null
 
     def __str__(self):
+        '''
+
+        :return:
+        '''
         return '<%s:%s>' % (self.__class__.__name__, self.name)
 
 
+class CharField(Field):
+    '''
+
+    '''
+
+    def __init__(self, name, size=255, primary_key=False, unique_key=False, is_null=True):
+        '''
+
+        :param name:
+        :param size:
+        :param primary_key:
+        :param unique_key:
+        :param is_null:
+        '''
+        super(StringField, self).__init__(name, 'CHAR(' + str(size) + ")", primary_key=primary_key,
+                                          unique_key=unique_key, is_null=is_null)
+
+
 class StringField(Field):
-    def __init__(self, name):
-        super(StringField, self).__init__(name, 'text')
+    '''
+
+    '''
+
+    def __init__(self, name, primary_key=False, unique_key=False, is_null=True):
+        '''
+
+        :param name:
+        :param primary_key:
+        :param unique_key:
+        :param is_null:
+        '''
+        super(StringField, self).__init__(name, 'TEXT', primary_key=primary_key, unique_key=unique_key, is_null=is_null)
 
 
 class IntegerField(Field):
-    def __init__(self, name):
-        super(IntegerField, self).__init__(name, 'INTEGER')
+    '''
+
+    '''
+
+    def __init__(self, name, primary_key=False, unique_key=False, is_null=True):
+        '''
+
+        :param name:
+        :param primary_key:
+        :param unique_key:
+        :param is_null:
+        '''
+        super(IntegerField, self).__init__(name, 'INTEGER', primary_key=primary_key, unique_key=unique_key,
+                                           is_null=is_null)
 
 
 class RealField(Field):
-    def __init__(self, name):
-        super(RealField, self).__init__(name, 'REAL')
+    '''
+
+    '''
+
+    def __init__(self, name, primary_key=False, unique_key=False, is_null=True):
+        '''
+
+        :param name:
+        :param primary_key:
+        :param unique_key:
+        :param is_null:
+        '''
+        super(RealField, self).__init__(name, 'REAL', primary_key=primary_key, unique_key=unique_key, is_null=is_null)
 
 
 class BlobField(Field):
-    def __init__(self, name):
-        super(BlobField, self).__init__(name, 'BOLB')
+    '''
+
+    '''
+
+    def __init__(self, name, primary_key=False, unique_key=False, is_null=True):
+        '''
+
+        :param name:
+        :param primary_key:
+        :param unique_key:
+        :param is_null:
+        '''
+        super(BlobField, self).__init__(name, 'BOLB', primary_key=primary_key, unique_key=unique_key, is_null=is_null)
 
 
 class ModelMetaClass(type):
+    '''
+    Model元基类
+    '''
+
     def __new__(cls, name, bases, attrs):
+        '''
+
+        :param name:
+        :param bases:
+        :param attrs:
+        '''
         print('ModelMetaClass __new__ ', cls, name, bases, attrs)
         if name == 'Model':
             return type.__new__(cls, name, bases, attrs)
@@ -52,17 +144,36 @@ class ModelMetaClass(type):
 
 
 class Model(object, metaclass=ModelMetaClass):
+    '''
+
+    '''
+
     def __init__(self, **kw):
+        '''
+
+        :param kw:
+        '''
         super(Model, self).__init__(**kw)
         self.conn = sqlite3.connect("C:/Users/Hang/PycharmProjects/RandomDataGenerate/data.db")
 
     def __getattr__(self, item):
+        '''
+
+        :param item:
+        :return:
+        '''
         try:
             return self.__dict__[item]
         except KeyError:
             raise AttributeError(r"Model'object has no attribute '%s" % item)
 
     def __setattr__(self, key, value):
+        '''
+
+        :param key:
+        :param value:
+        :return:
+        '''
         self.__dict__[key] = value
 
     def create(self):
@@ -70,10 +181,23 @@ class Model(object, metaclass=ModelMetaClass):
         创建表
         :return:
         '''
-        condition = []
+        conditions = []
         for k, v in self.__mappings__.items():
-            condition.append(str(v.name) + ' ' + str(v.column_type))
-        sql = 'create table %s(%s)' % (self.__table__, ','.join(condition))
+            condition = str(v.name) + ' ' + str(v.column_type)
+
+            '''
+                primary_key True 为主键
+                unique_key True 为唯一键
+                is_null True 可为空
+            '''
+            if v.primary_key:
+                condition += ' PRIMARY KEY'
+            if not v.is_null:
+                condition += ' NOT NULL'
+            if v.unique_key:
+                condition += ' UNIQUE'
+            conditions.append(condition)
+        sql = 'create table %s(%s)' % (self.__table__, ','.join(conditions))
         logging.warning(sql)
         try:
             cur = self.conn.cursor()
@@ -169,6 +293,9 @@ class Model(object, metaclass=ModelMetaClass):
 
 
 class User_Test(Model):
+    '''
+
+    '''
     id = IntegerField(name='id')
     name = StringField(name='name')
     age = IntegerField(name='age')
@@ -193,7 +320,7 @@ if __name__ == '__main__':
     # user_test.age = 19
     # user_test.save(name='hang')
 
-    #删除语句
+    # 删除语句
     user_test.id = 1
     user_test.name = 'hang'
     user_test.age = 19
