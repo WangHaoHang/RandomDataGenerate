@@ -1,3 +1,5 @@
+import logging
+
 import redis
 import json
 from kazoo.client import KazooClient
@@ -10,8 +12,29 @@ host_port = 5903
 
 zk = KazooClient(hosts=host_url)
 
+def singleton(clsObject):
+    '''
+    单例模式--装饰器方法
+    :param clsObject: 类
+    @singleton
+    class RedisUtil(object):
+        ...
+        ...
+    :return:
+    '''
 
-class RedisUtil(object):
+    def inner(*args, **kwargs):
+        if not hasattr(clsObject, "obj"):
+            obj = clsObject(*args, **kwargs)
+            setattr(clsObject, "obj", obj)
+        return getattr(clsObject, "obj")
+
+    return inner
+
+
+@singleton
+class RedisUtil:
+
     def __init__(self):
         self.host = host_url
         self.port = host_port
@@ -21,11 +44,17 @@ class RedisUtil(object):
     def set_str(self, key, value):
         '''
         设置键值字符串
-        :param key:
-        :param value:
-        :return:
+        :param key: 键 key
+        :param value: 值 字符串
+        :return: true:成功，false:错误
         '''
-        pass
+        flag = True
+        try:
+            flag = self.redis.set(key, value)
+        except Exception as e:
+            flag = False
+            logging.error("redisUtil ---- set_str happens error! key:{%s},value:{%s},error:{%s}", key, value, e)
+        return flag
 
     def get_str(self, key):
         '''
@@ -33,7 +62,12 @@ class RedisUtil(object):
         :param key:
         :return:
         '''
-        pass
+        result = ''
+        try:
+            result = self.redis.get(key).decode('utf-8')
+        except Exception as e:
+            logging.error("redisUtil ---- get_str happens error! key:{%s},error:{%s}", key, e)
+        return result
 
     def set_byte(self, key, value):
         '''
@@ -116,7 +150,18 @@ class RedisUtil(object):
 
 
 if __name__ == '__main__':
-    pass
+    obj = RedisUtil()
+    print(id(RedisUtil))
+    # print(id(RedisUtil))
+    print(id(singleton))
+    obj.set_str('hang', 'wang')
+    print(obj.get_str('hang'))
+    obj = RedisUtil()
+    print(id(obj))
+
+
+    # print(id(getattr(RedisUtil,'set_str')))
+
 # conn = redis.Redis(host_url,host_port)
 # conn.set('hang','123')
 # print(conn.get('hang').decode('utf-8'))
