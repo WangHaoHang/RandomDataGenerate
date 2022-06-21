@@ -29,7 +29,6 @@ def singleton(clsObject):
             obj = clsObject(*args, **kwargs)
             setattr(clsObject, "obj", obj)
         return getattr(clsObject, "obj")
-
     return inner
 
 
