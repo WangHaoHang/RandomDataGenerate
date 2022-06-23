@@ -81,14 +81,8 @@ def login():
     passwd = request.json.get('passwd')
     rsp = resultMsg()
     print(name, passwd)
-    from model.data_struct.user import User
-    u = User.query.filter_by(name=name, password=passwd).first()
-    if u is None:
-        rsp.code = '-1'
-        rsp.msg = '校验失败'
-    else:
-        return redirect('/gendata.html')
-    return make_response(jsonify(rsp.__dict__))
+    return redirect('/gendata.html')
+    # return make_response(jsonify(rsp.__dict__))
 
 
 @app.route(rule='/register', methods=['GET', 'POST'])
@@ -100,9 +94,7 @@ def register():
     name = request.json.get('username')
     passwd = request.json.get('passwd')
     print(name, passwd)
-    from model.data_struct.user import User
-    u = User.query.order_by(User.id.desc()).first()
-    user = User(id=str(int(u.id) + 1), name=name, password=passwd, ip_url=request.remote_addr)
+
     rsp = resultMsg()
     rsp.code = '0'
     rsp.msg = '成功'
@@ -195,10 +187,7 @@ def getUser():
     '''
     rsp = resultMsg()
     rsp.data = []
-    from model.data_struct.user import User
-    rows = User.query.all()
-    for row in rows:
-        rsp.data.append(row.name)
+
     return make_response(jsonify(rsp.__dict__))
 
 

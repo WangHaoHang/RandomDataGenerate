@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from service.random_text_service import random_metadata, random_name, random_passwd, random_email
-from model.data_struct.user import User
 from model.data_struct.metadata import metadata
+from service.entity.user import User
 
 
 def authenticate():
