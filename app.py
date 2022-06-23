@@ -2,7 +2,6 @@ import datetime
 import sys
 
 from flask import Flask, request, make_response, jsonify, render_template, send_file, session, redirect
-from flask_sqlalchemy import SQLAlchemy
 
 from service.random_text_service import random_stu_score_threshold_type, random_stu_score_threshold
 from service.utils import save_csv
@@ -13,13 +12,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-
-app.config['JSON_AS_ASCII'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-db = SQLAlchemy(app)
-
 
 def get_username_passwd():
     '''
@@ -111,8 +103,6 @@ def register():
     from model.data_struct.user import User
     u = User.query.order_by(User.id.desc()).first()
     user = User(id=str(int(u.id) + 1), name=name, password=passwd, ip_url=request.remote_addr)
-    db.session.add(user)
-    db.session.commit()
     rsp = resultMsg()
     rsp.code = '0'
     rsp.msg = '成功'
@@ -192,7 +182,7 @@ def database():
 
     :return:
     '''
-    db.create_all()
+    # db.create_all()
     rsp = resultMsg()
     return make_response(jsonify(rsp.__dict__))
 

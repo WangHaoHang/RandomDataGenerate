@@ -154,7 +154,7 @@ class Model(object, metaclass=ModelMetaClass):
         :param kw:
         '''
         super(Model, self).__init__(**kw)
-        self.conn = sqlite3.connect("C:/Users/Hang/PycharmProjects/RandomDataGenerate/data.db")
+        self.conn = sqlite3.connect("D:/Project/PycharmProjects/RandomDataGenerate/data.db")
 
     def __getattr__(self, item):
         '''
@@ -250,7 +250,7 @@ class Model(object, metaclass=ModelMetaClass):
         args = []
         for k, v in self.__mappings__.items():
             fields.append(v.name)
-            if v.column_type == 'text':
+            if v.column_type == 'TEXT':
                 args.append('\'' + getattr(self, k, None) + '\'')
             else:
                 args.append(str(getattr(self, k, None)))
