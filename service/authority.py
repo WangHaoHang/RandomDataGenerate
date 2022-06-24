@@ -4,11 +4,47 @@ from model.data_struct.metadata import metadata
 from service.entity.user import User
 
 
-def authenticate():
+def encryption(orgin_data, method, *args):
+    '''
+    加密数据
+    :param orgin_data:
+    :param method:
+    :param args:
+    :return:
+    '''
     pass
 
 
-def authority():
+def decryption(encry_data, method, *arg):
+    '''
+    解密数据
+    :param encry_data:
+    :param method:
+    :param arg:
+    :return:
+    '''
+    pass
+
+
+def authenticate(user_name: str, passwd: str):
+    '''
+    校验用户名和密码
+    :param user_name: 用户名
+    :param passwd: 密码
+    :return:
+    '''
+    flag = True
+    return flag
+
+
+def authority(user_name:str,passwd:str,role_name:str):
+    '''
+    角色授权验证
+    :param user_name: 用户名
+    :param passwd: 密码
+    :param role_name: 角色名
+    :return:
+    '''
     pass
 
 

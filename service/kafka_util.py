@@ -32,7 +32,7 @@ def warpper(cls_object):
     return inner
 
 
-@warpper
+# @warpper
 class KafkaUtils(object):
     '''
     Kafka工具类
@@ -117,6 +117,8 @@ def Consumer():
 
 
 if __name__ == '__main__':
+    kafka_utils = KafkaUtils()
+    kafka_utils.get_consumer()
     # Producer()
     Consumer()
     # create()
