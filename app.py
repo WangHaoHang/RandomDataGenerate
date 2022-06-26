@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 def get_username_passwd():
     '''
-    获取用户名和密码
+    获取用户名和密码1
     :return:
     '''
     name = request.cookies.get('User')
