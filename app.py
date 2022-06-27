@@ -2,10 +2,10 @@ import datetime
 import sys
 
 from flask import Flask, request, make_response, jsonify, render_template, send_file, session, redirect
-
 from service.random_text_service import random_stu_score_threshold_type, random_stu_score_threshold
 from service.utils import save_csv
 from model.result.resultMsg import resultMsg
+from service.entity.user import User
 import os
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -88,12 +88,17 @@ def login():
 @app.route(rule='/register', methods=['GET', 'POST'])
 def register():
     '''
-
+    注册用户
     :return:
     '''
     name = request.json.get('username')
     passwd = request.json.get('passwd')
-    print(name, passwd)
+    user = User()
+    id = user.get_next_id()
+    user.id = id
+    user.name = name
+    user.password =passwd
+    user.insert()
 
     rsp = resultMsg()
     rsp.code = '0'

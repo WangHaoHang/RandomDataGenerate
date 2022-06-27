@@ -231,7 +231,7 @@ class Model(object, metaclass=ModelMetaClass):
             elif type(v) == str:
                 update_str.append(str(v.name) + '=' + '\'' + str(v_new) + '\'')
 
-        sql = 'update %s set %s where %s' % (self.__table__, ' , '.join(update_str), ' and '.join(condition_str))
+        sql = 'update %s set %s where 1=1 and %s' % (self.__table__, ' , '.join(update_str), ' and '.join(condition_str))
         logging.warning(sql)
         try:
             cur = self.conn.cursor()
@@ -249,11 +249,14 @@ class Model(object, metaclass=ModelMetaClass):
         fields = []
         args = []
         for k, v in self.__mappings__.items():
+            tmp = getattr(self, k, None)
+            if tmp is None:
+                continue
             fields.append(v.name)
             if v.column_type == 'TEXT':
-                args.append('\'' + getattr(self, k, None) + '\'')
+                args.append('\'' + tmp + '\'')
             else:
-                args.append(str(getattr(self, k, None)))
+                args.append(str(tmp))
         sql = 'insert into %s(%s) values(%s)' % (self.__table__, ','.join(fields), ','.join(args))
         logging.warning(sql)
         try:

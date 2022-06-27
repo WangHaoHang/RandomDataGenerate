@@ -12,7 +12,7 @@ def encryption(orgin_data, method, *args):
     :param args:
     :return:
     '''
-    pass
+    return generate_password_hash(orgin_data)
 
 
 def decryption(encry_data, method, *arg):

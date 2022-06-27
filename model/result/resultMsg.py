@@ -1,6 +1,6 @@
 class resultMsg(object):
     '''
-
+    统一返回消息结构体
     '''
     def __init__(self):
         '''
