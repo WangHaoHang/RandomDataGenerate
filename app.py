@@ -114,9 +114,9 @@ def gendata():
 @app.route(rule='/download/<id>/<file_name>', methods=['GET', 'POST'])
 def download(id, file_name):
     '''
-
-    :param id:
-    :param file_name:
+    下载文件
+    :param id: 用户序号
+    :param file_name: 文件名
     :return:
     '''
     return send_file(path_or_file='model/datas/tmp/' + id + '/' + file_name, mimetype='application/text')
@@ -125,13 +125,17 @@ def download(id, file_name):
 @app.route(rule='/savefile/<name>', methods=['GET', 'POST'])
 def savefile(name):
     '''
-
-    :param name:
+    保存数据到文件中
+    :param name: 文件名
     :return:
     '''
+    # 数据
     data = request.json
+    # 判断文件夹存在
     if not os.path.exists('model/datas/tmp/1/'):
+        # 创建文件夹
         os.mkdir('model/datas/tmp/1/')
+    # 保存数据到文件
     flag = save_csv('model/datas/tmp/1/' + name + '.csv', data)
     rsp = resultMsg()
     if flag:
@@ -155,13 +159,15 @@ def text():
 @app.route(rule='/uploadfile', methods=['GET', 'POST'])
 def uploadfile():
     '''
-
+    上传文件
     :return:
     '''
+    # 文件key
     files = request.files.keys()
     print(files)
     for file in files:
         f = request.files[file]
+        # 保存文件
         f.save('model/datas/tmp/' + f.filename)
     rsp = resultMsg()
     return make_response(jsonify(rsp.__dict__))
