@@ -16,6 +16,11 @@
                 <div id="echart" ref="echart">
 
                 </div>
+                <p>
+                    <router-link to="/home">Go to Home</router-link>
+                    <router-link to="/about">Go to About</router-link>
+                </p>
+                <router-view></router-view>
             </el-main>
             <el-footer>Footer</el-footer>
         </el-container>
@@ -25,11 +30,25 @@
 </body>
 <script src="../static/js/vue.js"></script>
 <script src="../static/js/index.js"></script>
-<script src="../static/js/vue-router.min.js"></script>
 <script src="../static/js/axios.js"></script>
 <script src="../static/js/jquery-3.6.0.js"></script>
 <script src="../static/js/echarts.js"></script>
+<script src="../static/js/vue-router.min.js"></script>
 <script type="application/javascript">
+    const Home = {
+        name: 'home',
+        template: "<h>home1</h>"
+    }
+    const About = {
+        template: "<h>about2</h>"
+    }
+    const routes = [
+        {path: "/home", component: Home},
+        {path: "/about", component: About}
+    ]
+    const router = new VueRouter({
+        routes
+    })
     Vue.prototype.$echarts = echarts
     Vue.prototype.$chartInstance = null
     app = new Vue(
@@ -39,7 +58,8 @@
                 this.$chartInstance = this.$echarts.init(this.$refs.echart)
             },
             data: {},
-            methods: {}
+            methods: {},
+            router
         }
     )
 
@@ -56,9 +76,8 @@
         background-color: #D3DCE6;
         color: #333;
         text-align: center;
-        {#line-height: 500px;#}
-        line-height: 800px;
-        {#line-height: 800px;#}
+    {#line-height: 500px;#} line-height: 800px;
+    {#line-height: 800px;#}
     }
 
     .el-main {
@@ -66,7 +85,7 @@
         color: #333;
         text-align: center;
         line-height: 500px;
-        {#line-height: 800px;#}
+    {#line-height: 800px;#}
     }
 
     body > .el-container {
