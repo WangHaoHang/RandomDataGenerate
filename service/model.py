@@ -294,7 +294,32 @@ class Model(object, metaclass=ModelMetaClass):
         except Exception as e:
             logging.error("delete data happens error,the statement of sql :%s,error:%s", sql, e)
 
-
+    def query(self, **kwargs):
+        '''
+        查询数据
+        :param kwargs: 查询条件
+        :return: 数据组
+        '''
+        select_condition = []
+        where_condition = []
+        for k, v in self.__mappings__.items():
+            select_condition.append(v.name)
+            if list(kwargs.keys()).count(k) > 0:
+                if str(kwargs[k]).lower().startswith('in'):
+                    where_condition.append(v.name + str(kwargs[k]))
+                else:
+                    where_condition.append(v.name + '=' + str(kwargs[k]))
+        if len(select_condition) == 0:
+            return None
+        sql_statement = "select " + ",".join(
+            select_condition) + " from " + self.__table__ + " where 1=1 and " + "and".join(where_condition)
+        cur = self.conn.cursor()
+        logging.warning(sql_statement)
+        cur.execute(sql_statement)
+        self.conn.commit()
+        result = cur.fetchall()
+        cur.close()
+        return result
 class User_Test(Model):
     '''
 
