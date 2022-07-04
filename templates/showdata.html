@@ -13,6 +13,8 @@
             <el-header>Header</el-header>
             <el-main>
                 Main
+                <el-button type="success" @click="routeChange"> 确定</el-button>
+                <el-button type="warning" @click="routeBack">回退</el-button>
                 <div id="echart" ref="echart">
 
                 </div>
@@ -36,15 +38,14 @@
 <script src="../static/js/vue-router.min.js"></script>
 <script type="application/javascript">
     const Home = {
-        name: 'home',
-        template: "<h>home1</h>"
+        template: "<h>home1{{ $route.params.id }}</h>"
     }
     const About = {
         template: "<h>about2</h>"
     }
     const routes = [
-        {path: "/home", component: Home},
-        {path: "/about", component: About}
+        {path: "/home/:id", name: 'home', component: Home},
+        {path: "/about", name: "about", component: About}
     ]
     const router = new VueRouter({
         routes
@@ -58,7 +59,14 @@
                 this.$chartInstance = this.$echarts.init(this.$refs.echart)
             },
             data: {},
-            methods: {},
+            methods: {
+                routeChange: function () {
+                    this.$router.push({name: "home", params: {id: 123}})
+                },
+                routeBack: function () {
+                    this.$router.go(-1)
+                }
+            },
             router
         }
     )
