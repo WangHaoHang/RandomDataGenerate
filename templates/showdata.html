@@ -28,7 +28,21 @@
                     </el-table-column>
                     <el-table-column lable="操作">
                         <template slot-scope="scope">
-                            <el-button type="primary" @click="downloadfile(scope.row.downloadurl)" size="small">下载
+                            <el-button type="primary" icon="el-icon-download"
+                                       @click="downloadfile(scope.row.downloadurl)" size="small">
+                                下载
+                            </el-button>
+                            <el-button type="primary" icon="el-icon-view" @click="downloadfile(scope.row.downloadurl)"
+                                       size="small">
+                                查看
+                            </el-button>
+                            <el-button type="primary" icon="el-icon-edit" @click="downloadfile(scope.row.downloadurl)"
+                                       size="small">
+                                编辑
+                            </el-button>
+                            <el-button type="primary" icon="el-icon-document-remove"
+                                       @click="downloadfile(scope.row.downloadurl)" size="small">
+                                删除
                             </el-button>
                         </template>
                     </el-table-column>
