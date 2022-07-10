@@ -8,14 +8,55 @@
 <body>
 <div id="app">
     <el-container>
-        <el-aside>Aside</el-aside>
+        <el-aside>
+            Aside
+            <ul>
+                <li>haha</li>
+                <li>hehe</li>
+            </ul>
+            <el-tree :data="treedata" :props="treeprops" @node-click="">
+
+            </el-tree>
+        </el-aside>
         <el-container>
             <el-header>Header</el-header>
             <el-main>
-                Main
+                <el-table :data="tabledata" style="width:100%">
+                    <el-table-column prop="date" lable="日期">
+                    </el-table-column>
+                    <el-table-column prop="filename" lable="文件名">
+                    </el-table-column>
+                    <el-table-column lable="操作">
+                        <template slot-scope="scope">
+                            <el-button type="text" icon="el-icon-download"
+                                       @click="downloadfile(scope.row.downloadurl)" size="small">
+                                下载
+                            </el-button>
+                            <el-button type="text" icon="el-icon-view" @click="downloadfile(scope.row.downloadurl)"
+                                       size="small">
+                                查看
+                            </el-button>
+                            <el-button type="text" icon="el-icon-edit" @click="downloadfile(scope.row.downloadurl)"
+                                       size="small">
+                                编辑
+                            </el-button>
+                            <el-button type="text" icon="el-icon-document-remove"
+                                       @click="downloadfile(scope.row.downloadurl)" size="small">
+                                删除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-button type="success" @click="routeChange"> 确定</el-button>
+                <el-button type="warning" @click="routeBack">回退</el-button>
                 <div id="echart" ref="echart">
 
                 </div>
+                <p>
+                    <router-link to="/home">Go to Home</router-link>
+                    <router-link to="/about">Go to About</router-link>
+                </p>
+                <router-view></router-view>
             </el-main>
             <el-footer>Footer</el-footer>
         </el-container>
@@ -25,11 +66,24 @@
 </body>
 <script src="../static/js/vue.js"></script>
 <script src="../static/js/index.js"></script>
-<script src="../static/js/vue-router.min.js"></script>
 <script src="../static/js/axios.js"></script>
 <script src="../static/js/jquery-3.6.0.js"></script>
 <script src="../static/js/echarts.js"></script>
+<script src="../static/js/vue-router.min.js"></script>
 <script type="application/javascript">
+    const Home = {
+        template: "<h>home1{{ $route.params.id }}</h>"
+    }
+    const About = {
+        template: "<h>about2</h>"
+    }
+    const routes = [
+        {path: "/home/:id", name: 'home', component: Home},
+        {path: "/about", name: "about", component: About}
+    ]
+    const router = new VueRouter({
+        routes
+    })
     Vue.prototype.$echarts = echarts
     Vue.prototype.$chartInstance = null
     app = new Vue(
@@ -38,8 +92,40 @@
             mounted: function () {
                 this.$chartInstance = this.$echarts.init(this.$refs.echart)
             },
-            data: {},
-            methods: {}
+            data: {
+                tabledata: [
+                    {
+                        date: '2016-05-02',
+                        filename: '王小虎',
+                        downloadurl: 'www.baidu.com'
+                    },
+                    {
+                        date: '2016-05-02',
+                        filename: '王小虎',
+                        downloadurl: 'www.baidu.com'
+                    },
+                    {
+                        date: '2016-05-02',
+                        filename: '王小虎',
+                        downloadurl: 'www.baidu.com'
+                    }
+                ]
+            },
+            methods: {
+                routeChange: function () {
+                    this.$router.push({name: "home", params: {id: 123}})
+                },
+                routeBack: function () {
+                    this.$router.go(-1)
+                },
+                downloadfile(url) {
+                    this.$message({
+                        type: "warning",
+                        message: url
+                    })
+                }
+            },
+            router
         }
     )
 
@@ -56,17 +142,15 @@
         background-color: #D3DCE6;
         color: #333;
         text-align: center;
-        {#line-height: 500px;#}
-        line-height: 800px;
-        {#line-height: 800px;#}
+    {#line-height: 500px;#} line-height: 800px;
+    {#line-height: 800px;#}
     }
 
     .el-main {
         background-color: #E9EEF3;
         color: #333;
         text-align: center;
-        line-height: 500px;
-        {#line-height: 800px;#}
+    {#line-height: 500px;#}{#line-height: 800px;#}
     }
 
     body > .el-container {

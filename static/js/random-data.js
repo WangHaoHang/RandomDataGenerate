@@ -1,4 +1,8 @@
 // 后端进行数据下载
+/**
+ *
+ * @param data
+ */
 function download_file(data) {
     if (!data) {
         return
@@ -18,6 +22,13 @@ function download_file(data) {
     link.click()
 }
 
+/**
+ *
+ * @param title
+ * @param x_name
+ * @param y_name
+ * @returns {{yAxis: {data: *}, xAxis: {data: *}, legend: {data: []}, series: [], tooltip: {}, title: {text: *}}}
+ */
 function gen_option(title, x_name, y_name) {
     return {
         title: {
@@ -37,6 +48,11 @@ function gen_option(title, x_name, y_name) {
     }
 }
 
+/**
+ *
+ * @param orgindata
+ * @returns {[][]}
+ */
 function transform_data(orgindata) {
     var tabeldata = []
     var columnames = []
@@ -54,7 +70,7 @@ function transform_data(orgindata) {
         }
         tabeldata.push(temp)
     }
-    return [columnames,tabeldata]
+    return [columnames, tabeldata]
 }
 
 function filter_data(data, types) {
@@ -69,6 +85,12 @@ function filter_data(data, types) {
     return map_data
 }
 
+/**
+ *
+ * @param data
+ * @param datas
+ * @returns {boolean}
+ */
 function is_in_datas(data, datas) {
     var flag = false
     let len = datas.length
@@ -82,6 +104,13 @@ function is_in_datas(data, datas) {
     return flag
 }
 
+/**
+ *
+ * @param option
+ * @param map_data
+ * @param type_name
+ * @returns {*}
+ */
 function fill_echart_data(option, map_data, type_name) {
     for (index in map_data) {
         option.legend.data.push({
@@ -94,4 +123,12 @@ function fill_echart_data(option, map_data, type_name) {
         })
     }
     return option;
+}
+
+function test() {
+    return {
+        template: '<h>hello component!</h>',
+        data: {},
+        methods: {}
+    }
 }

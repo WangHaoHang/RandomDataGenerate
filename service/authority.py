@@ -3,6 +3,7 @@ from service.random_text_service import random_metadata, random_name, random_pas
 from model.data_struct.metadata import metadata
 from service.entity.user import User
 
+import logging
 
 def encryption(orgin_data, method, *args):
     '''
@@ -12,7 +13,7 @@ def encryption(orgin_data, method, *args):
     :param args:
     :return:
     '''
-    pass
+    return generate_password_hash(str(orgin_data), method=method)
 
 
 def decryption(encry_data, method, *arg):
@@ -34,6 +35,14 @@ def authenticate(user_name: str, passwd: str):
     :return:
     '''
     flag = True
+    user = User()
+    result = user.query(name=str(user_name))
+    if result is None or len(result) == 0:
+        return False
+    try:
+        flag = check_password_hash(result[0][2], passwd)
+    except Exception as e:
+        logging.error(e)
     return flag
 
 
@@ -48,22 +57,20 @@ def authority(user_name:str,passwd:str,role_name:str):
     pass
 
 
-def insert_user(name, passwd, ip_url, db):
+def insert_user(name, passwd, ip_url):
     '''
-    id = db.Column(db.String, primary_key=True)
-    name = db.Column(db.String(128))
-    password = db.Column(db.String(64))
-    phone_number = db.Column(db.String(64))
-    email = db.Column(db.String(64))
-    token = db.Column(db.String(256))
-    ip_url = db.Column(db.String(256))
-    role_code = db.Column(db.String(64))
+    插入数据
+    :param name: 姓名
+    :param passwd: 密码
+    :param ip_url:
+    :return:
     '''
-    u = User.query.order_by(name='id').first()
-    user = User(id=str(int(u.id) + 1), name=name, password=passwd, ip_url=ip_url)
-    db.session.add(user)
-    db.seesion.commit()
-
+    user = User()
+    user.id = user.get_next_id()
+    user.name = name
+    user.password = encryption(passwd)
+    user.ip_url = ip_url
+    return user.insert()
 
 def insert_random_user():
     '''
