@@ -7,8 +7,8 @@ from kazoo.client import KazooClient
 # host_url = '192.168.8.102'
 # host_port = 6379
 
-host_url = '114.96.81.229'
-host_port = 5903
+host_url = '192.168.0.221'
+host_port = 6379
 
 zk = KazooClient(hosts=host_url)
 
