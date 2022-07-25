@@ -2,7 +2,13 @@ import logging
 from reverse_index import Reverse_Index
 from document import Document
 
+'''_summary_
 
+    布尔检索
+    选择int中的32位bit进行存储，超过32位，则增加一个int
+    word1: doc1,doc2,doc3 .... docn
+    假设 w1:doc1,doc2, .... ,doc33,则存储方式为 w1:1(doc32)...{30} 1(doc1), 0...{30}1(doc33)
+ '''
 class Bool_Index(Reverse_Index):
     '''布尔索引
 
@@ -19,6 +25,11 @@ class Bool_Index(Reverse_Index):
         self.init_value_size = 0
 
     def input_doc(self, docs):
+        '''_summary_
+            输入文档
+        :param docs: 文档集合
+        :type docs: [Document]
+        '''
         self.doc_ids_len = len(docs)
         print(self.doc_ids_len)
         self.init_value_size = int((self.doc_ids_len - 1) / self.int_len) + 1
@@ -39,6 +50,13 @@ class Bool_Index(Reverse_Index):
             doc_index += 1
     
     def get_docId_by_word(self,word:str):
+        '''_summary_
+            通过 word 查找 docId
+        :param word: 单词
+        :type word: str
+        :return: _description_
+        :rtype: _type_
+        '''
         if self.index_map.get(word) == None:
             return None
         else:
@@ -47,6 +65,13 @@ class Bool_Index(Reverse_Index):
         return self.__get_docId_by_bool_value(bool_value=bool_value)
     
     def __get_docId_by_bool_value(self,bool_value):
+        '''_summary_
+            根据布尔值返回docId
+        :param bool_value: _description_
+        :type bool_value: _type_
+        :return: _description_
+        :rtype: _type_
+        '''
         index = 0
         docIdIndexs = []
         docIds = []
@@ -60,6 +85,13 @@ class Bool_Index(Reverse_Index):
         return docIds
     
     def __bit_index(self, value):
+        '''_summary_
+        通过value 转成二进制形式，计算其中"1"所在的位置
+        :param value: _description_
+        :type value: _type_
+        :return: _description_
+        :rtype: _type_
+        '''
         result = []
         for i in range(32):
             if value % 2 == 1:
@@ -89,6 +121,17 @@ class Bool_Index(Reverse_Index):
         return arr_index,bit_index
     
     def __set_value_1(self,index:int,arr_index:int,bit_index:int):
+        '''_summary_
+
+        :param index: _description_
+        :type index: int
+        :param arr_index: _description_
+        :type arr_index: int
+        :param bit_index: _description_
+        :type bit_index: int
+        :return: _description_
+        :rtype: _type_
+        '''
         flag = True
         try:
             self.index_bool_value[index][arr_index] |= 1 << (bit_index)
@@ -98,6 +141,17 @@ class Bool_Index(Reverse_Index):
         return flag
         
     def __set_value_0(self,index,arr_index,bit_index):
+        '''_summary_
+
+        :param index: _description_
+        :type index: _type_
+        :param arr_index: _description_
+        :type arr_index: _type_
+        :param bit_index: _description_
+        :type bit_index: _type_
+        :return: _description_
+        :rtype: _type_
+        '''
         flag = True
         try:
             self.index_bool_value[index][arr_index] &=  ((1 << (bit_index))^0xffffffff)
@@ -107,6 +161,11 @@ class Bool_Index(Reverse_Index):
         return flag
     
     def __and_value(self, *indexs):
+        '''_summary_
+
+        :return: _description_
+        :rtype: _type_
+        '''
         result = self.__init_value()
         result_len = len(result)
         for i in range(result_len):
@@ -117,6 +176,11 @@ class Bool_Index(Reverse_Index):
         return result
     
     def __or_value(self, *indexs):
+        '''_summary_
+
+        :return: _description_
+        :rtype: _type_
+        '''
         result = self.__init_value()
         result_len = len(result)
         for index in indexs:
