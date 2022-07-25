@@ -6,9 +6,9 @@ from service.random_text_service import random_stu_score_threshold_type, random_
 from service.utils import save_csv
 from model.result.resultMsg import resultMsg
 from service.entity.user import User
+from service.authority import insert_user, check_user
 import os
 
-from werkzeug.security import generate_password_hash, check_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -20,6 +20,7 @@ def get_username_passwd():
     '''
     name = request.cookies.get('User')
     passwd = request.cookies.get('Passwd')
+    return name, passwd
 
 
 # @app.before_request
@@ -83,6 +84,29 @@ def login():
     print(name, passwd)
     return redirect('/gendata.html')
     # return make_response(jsonify(rsp.__dict__))
+
+
+@app.route(rule='/registername', methods=['GET'])
+def register_name():
+    name = request.args.get('name')
+    passwd = request.args.get('passwd')
+    insert_user(name, passwd)
+    rsp = resultMsg()
+    rsp.code = '0'
+    return make_response(jsonify(rsp.__dict__))
+
+
+@app.route(rule='/checkname', methods=['GET'])
+def check_name():
+    name = request.args.get('name')
+    passwd = request.args.get('passwd')
+    rsp = resultMsg()
+    rsp.code = '0'
+    if check_user(name, passwd):
+        rsp.msg = 'success'
+    else:
+        rsp.msg = "fail"
+    return make_response(jsonify(rsp.__dict__))
 
 
 @app.route(rule='/register', methods=['GET', 'POST'])

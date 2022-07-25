@@ -36,10 +36,12 @@ def authenticate(user_name: str, passwd: str):
     '''
     flag = True
     user = User()
-    result = user.query(name=str(user_name))
+    result = user.query(name=user_name)
+    print(result)
     if result is None or len(result) == 0:
         return False
     try:
+        logging.warning('authenticate --- %s', result[0][2])
         flag = check_password_hash(result[0][2], passwd)
     except Exception as e:
         logging.error(e)
@@ -68,9 +70,17 @@ def insert_user(name, passwd, ip_url):
     user = User()
     user.id = user.get_next_id()
     user.name = name
-    user.password = encryption(passwd)
+    if len(user.query(name=user.name)) > 0:
+        logging.error('insert_user --- 插入失败，已经存在用户名')
+    else:
+        user.password = encryption(passwd, method='pbkdf2:sha256')
     user.ip_url = ip_url
     return user.insert()
+
+
+def check_user(name: str, passwd: str):
+    return authenticate(name, passwd)
+
 
 def insert_random_user():
     '''
@@ -84,3 +94,7 @@ def insert_random_user():
     datas = [name, passwd, email, phone]
     result = random_metadata(100, datas)
     return result
+
+
+def save_user():
+    pass

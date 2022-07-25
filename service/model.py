@@ -154,7 +154,7 @@ class Model(object, metaclass=ModelMetaClass):
         :param kw:
         '''
         super(Model, self).__init__(**kw)
-        self.conn = sqlite3.connect("D:/Project/PycharmProjects/RandomDataGenerate/data.db")
+        self.conn = sqlite3.connect("C:/Users/Hang/PycharmProjects/RandomDataGenerate/data.db")
 
     def __getattr__(self, item):
         '''
@@ -308,7 +308,7 @@ class Model(object, metaclass=ModelMetaClass):
                 if str(kwargs[k]).lower().startswith('in'):
                     where_condition.append(v.name + str(kwargs[k]))
                 else:
-                    where_condition.append(v.name + '=' + str(kwargs[k]))
+                    where_condition.append(v.name + '=' + "'" + str(kwargs[k]) + "'")
         if len(select_condition) == 0:
             return None
         sql_statement = "select " + ",".join(

@@ -35,15 +35,15 @@ class User(Model):
 
 if __name__ == '__main__':
     user = User()
-    user.id = user.get_next_id()
-    print(user.id)
+    # user.id = user.get_next_id()
+    # print(user.id)
     # user.create()
     # user.id = '1'
-    user.name = 'hang1'
-    user.email = "hang@qq.com"
-    user.password = "123"
+    # user.name = 'hang1'
+    # user.email = "hang@qq.com"
+    # user.password = "123"
     # user.phone_number = "18963607215"
     # user.ip_url = "http:localhost"
     # user.role_code = "admin"
     # user.token = "123"
-    print(user.insert())
+    print(user.query(name='hang'))
