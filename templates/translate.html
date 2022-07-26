@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <ol>
+        <li v-for="b in a">
+            <el-button type="text">{{ b[0] }}</el-button>
+            <el-input v-model="b[1]" placeholder="请输入翻译内容"></el-input>
+        </li>
+    </ol>
+
+    <el-button class="el-button1" type="primary">提交</el-button>
+    <el-pagination class="el-button2" layout="prev,pager,next,jumper" :total="50">
+
+    </el-pagination>
+</div>
+
+</body>
+<script src="../static/js/vue.js"></script>
+<script src="../static/js/index.js"></script>
+<script src="../static/js/vue-router.min.js"></script>
+<script src="../static/js/axios.js"></script>
+<script src="../static/js/jquery-3.6.0.js"></script>
+<script src="../static/js/echarts.js"></script>
+<script>
+    app = new Vue(
+        {
+            el: '#app',
+            data: function () {
+                return {
+                    a: [["this is a test example", ""], ["hello world", ""]],
+                    lines: ""
+                }
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+            },
+            methods: {}
+        }
+    )
+
+</script>
+<style>
+    .el-button1 {
+        margin-left: 50%;
+    }
+
+    .el-button2 {
+        margin-left: 40%;
+    }
+</style>
+</html>
