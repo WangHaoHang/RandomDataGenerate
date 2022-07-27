@@ -7,6 +7,13 @@
 </head>
 <body>
 <div id="app">
+
+    <div>
+        <el-input style="width: 80%" v-model="filename"></el-input>
+        <el-button type="primary" icon="el-icon-search">搜索</el-button>
+    </div>
+
+
     <ol>
         <li v-for="b in a">
             <el-button type="text">{{ b[0] }}</el-button>
@@ -14,7 +21,7 @@
         </li>
     </ol>
 
-    <el-button class="el-button1" type="primary">提交</el-button>
+    <el-button class="el-button1" type="primary" @click="get_text()">提交</el-button>
     <el-pagination class="el-button2" layout="prev,pager,next,jumper" :total="50">
 
     </el-pagination>
@@ -33,6 +40,7 @@
             el: '#app',
             data: function () {
                 return {
+                    filename: "",
                     a: [["this is a test example", ""], ["hello world", ""]],
                     lines: ""
                 }
@@ -42,7 +50,26 @@
             },
             mounted: function () {
             },
-            methods: {}
+            methods: {
+                get_text: function (e) {
+                    var vm = this
+                    vm.$message({
+                        type: "success",
+                        message: "try it do"
+                    })
+                    input_param = {
+                        filename: "",
+                        page_index: 0
+                    }
+                    axios.post("/getText", input_param)
+                        .then(function (rsp) {
+
+                        })
+                        .catch(function (err) {
+
+                        })
+                }
+            }
         }
     )
 
