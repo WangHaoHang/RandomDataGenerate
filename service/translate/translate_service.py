@@ -8,13 +8,29 @@ class TranslateService(object):
     def __init__(self):
         pass
 
-    def get_translate_file(self, filename: str, pagesize: int):
+    def get_translate_file(self, filename: str, pageindex: int, pagesize: int):
         lines = []
-        with open(path_url + filename, 'r', encoding='utf-8') as fd:
+        with open(path_url + filename + '.txt', 'r', encoding='utf-8') as fd:
             lines = fd.readlines()
             fd.close()
         datas = self.__filter_lines(lines)
         return datas
+
+    def compute_sentense(self, datas: []):
+        sentenses_count = []
+        sentenses = []
+        size = len(datas)
+        for i in range(size // 2):
+            count = 0
+            chap_index = 2 * i
+            content_index = 2 * i + 1
+            sentenses.append(datas[chap_index])
+            count += 1
+            sentense = str(datas[content_index]).split(".")
+            count += len(sentense)
+            sentenses_count.append(count)
+            sentenses.append(sentense)
+        return sentenses_count, sentenses
 
     def __filter_lines(self, lines):
         new_lines = []
@@ -40,5 +56,8 @@ class TranslateService(object):
 
 if __name__ == '__main__':
     trans_utils = TranslateService()
-    datas = trans_utils.get_translate_file('Timid Lucy.txt', 10)
+    datas = trans_utils.get_translate_file('Timid Lucy', 1, 10)
     print(len(datas))
+    sen_count, sens = trans_utils.compute_sentense(datas)
+    print(sen_count)
+    print(sens)
