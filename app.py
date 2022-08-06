@@ -121,13 +121,28 @@ def register():
     id = user.get_next_id()
     user.id = id
     user.name = name
-    user.password =passwd
+    user.password = passwd
     user.insert()
 
     rsp = resultMsg()
     rsp.code = '0'
     rsp.msg = '成功'
     return make_response(jsonify(rsp.__dict__))
+
+
+@app.route(rule="/get_translate_file", methods=['POST'])
+def get_translate_file():
+    filename = request.json.get('filename')
+    pagesize = request.json.get('pagesize')
+    rsp = resultMsg()
+    rsp.data = []
+
+    return make_response(jsonify(rsp.__dict__))
+
+
+@app.route(rule="/save_translate_file", methods=['POST'])
+def save_translate_file():
+    pass
 
 
 @app.route(rule='/gendata.html', methods=['GET'])
