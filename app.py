@@ -1,12 +1,13 @@
 import datetime
 import sys
 
-from flask import Flask, request, make_response, jsonify, render_template, send_file, session, redirect
+from flask import Flask, request, make_response, jsonify, render_template, send_file, session, redirect, url_for
 from service.random_text_service import random_stu_score_threshold_type, random_stu_score_threshold
 from service.utils import save_csv
 from model.result.resultMsg import resultMsg
 from service.entity.user import User
 from service.authority import insert_user, check_user
+from service.translate.translate_service import TranslateService
 import os
 
 
@@ -133,10 +134,20 @@ def register():
 @app.route(rule="/get_translate_file", methods=['POST'])
 def get_translate_file():
     filename = request.json.get('filename')
-    pagesize = request.json.get('pagesize')
+    pagesize = request.json.get('page_size')
+    pageindex = request.json.get('page_index')
     rsp = resultMsg()
     rsp.data = []
-
+    translate_service = TranslateService()
+    try:
+        title, result = translate_service.get_translate_file(filename, pageindex, pagesize)
+        rsp.data = {'title': title, 'data': result}
+        rsp.code = 0
+        rsp.msg = 'success'
+    except Exception as e:
+        rsp.code = -1
+        rsp.msg = 'failed'
+        print(e)
     return make_response(jsonify(rsp.__dict__))
 
 
@@ -152,6 +163,12 @@ def gendata():
     :return:
     '''
     rsp = make_response(render_template('gendata.html'))
+    return rsp
+
+
+@app.route(rule='/translate.html', methods=['GET'])
+def translate_html():
+    rsp = make_response(render_template('translate.html'))
     return rsp
 
 

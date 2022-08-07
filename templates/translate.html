@@ -16,8 +16,8 @@
 
     <ol>
         <li v-for="b in a">
-            <el-button type="text">{{ b[0] }}</el-button>
-            <el-input v-model="b[1]" placeholder="请输入翻译内容"></el-input>
+            <el-input class="el-before-font" v-model="b[0]" autosize disabled></el-input>
+            <el-input class="el-before-font" v-model="b[1]" placeholder="请输入翻译内容"></el-input>
         </li>
     </ol>
 
@@ -40,7 +40,8 @@
             el: '#app',
             data: function () {
                 return {
-                    filename: "",
+                    filename: "Timid Lucy",
+                    title: "",
                     a: [["this is a test example", ""], ["hello world", ""]],
                     lines: ""
                 }
@@ -53,20 +54,28 @@
             methods: {
                 get_text: function (e) {
                     var vm = this
-                    vm.$message({
-                        type: "success",
-                        message: "try it do"
-                    })
                     input_param = {
-                        filename: "",
-                        page_index: 0
+                        filename: "Timid Lucy",
+                        page_index: 20,
+                        page_size: 20
                     }
-                    axios.post("/getText", input_param)
+                    axios.post("/get_translate_file", input_param)
                         .then(function (rsp) {
+                            vm.$data.title = rsp.data['data'].title;
+                            let i = 0
+                            size = rsp.data['data'].data.length
+                            vm.$data.a = []
+                            for (i = 0; i < size; i++) {
+                                tmp = [rsp.data['data'].data[i], ""]
+                                vm.$data.a.push(tmp)
+                            }
 
                         })
                         .catch(function (err) {
-
+                            vm.$message({
+                                type: 'error',
+                                message: err
+                            })
                         })
                 }
             }
@@ -81,6 +90,11 @@
 
     .el-button2 {
         margin-left: 40%;
+    }
+
+    .el-before-font {
+        color: #3a8ee6;
+        background-color: #8cc5ff;
     }
 </style>
 </html>

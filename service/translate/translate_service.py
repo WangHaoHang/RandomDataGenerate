@@ -1,5 +1,4 @@
 from service.redis_util import singleton
-
 path_url = 'C:/Users/Hang/PycharmProjects/RandomDataGenerate/model/datas/translate/'
 
 
@@ -9,12 +8,29 @@ class TranslateService(object):
         pass
 
     def get_translate_file(self, filename: str, pageindex: int, pagesize: int):
+        title = ''
+        result = []
         lines = []
         with open(path_url + filename + '.txt', 'r', encoding='utf-8') as fd:
             lines = fd.readlines()
             fd.close()
-        datas = self.__filter_lines(lines)
-        return datas
+        lines = self.__filter_lines(lines)
+        sen_count, sentenses = self.compute_sentense(lines)
+        print(sen_count)
+        pre_total_count = (pageindex - 1) * pagesize
+        index = 0
+        for index in range(len(sen_count)):
+            if pre_total_count > sen_count[index]:
+                pre_total_count -= sen_count[index]
+            else:
+                break
+        if pre_total_count >= 0:
+            title = sentenses[2 * index]
+            if sen_count[index] < pre_total_count + pagesize:
+                pagesize = sen_count[index] - pre_total_count
+            for i in range(pagesize):
+                result.append(sentenses[2 * index + 1][i] + '.')
+        return title, result
 
     def compute_sentense(self, datas: []):
         sentenses_count = []
@@ -25,7 +41,6 @@ class TranslateService(object):
             chap_index = 2 * i
             content_index = 2 * i + 1
             sentenses.append(datas[chap_index])
-            count += 1
             sentense = str(datas[content_index]).split(".")
             count += len(sentense)
             sentenses_count.append(count)
@@ -56,8 +71,6 @@ class TranslateService(object):
 
 if __name__ == '__main__':
     trans_utils = TranslateService()
-    datas = trans_utils.get_translate_file('Timid Lucy', 1, 10)
-    print(len(datas))
-    sen_count, sens = trans_utils.compute_sentense(datas)
-    print(sen_count)
-    print(sens)
+    title, result = trans_utils.get_translate_file('Timid Lucy', 1, 20)
+    print(title)
+    print(result)
